@@ -1,2 +1,2 @@
 # HKU-KernModule1
-Repository for kernmodule1 unity files
+Repository for kernmodule1 files
