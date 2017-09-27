@@ -22,7 +22,7 @@ GameObject:
   - component: {fileID: 212850042609128816}
   - component: {fileID: 114741942483224776}
   m_Layer: 0
-  m_Name: Unit
+  m_Name: Block
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -49,7 +49,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1371213153439100}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c2cd3e51ef8cedf4fbc543dce22b942c, type: 3}
+  m_Script: {fileID: 11500000, guid: 82ee5cafaf9b1a84db29369383cbda0c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!212 &212850042609128816
