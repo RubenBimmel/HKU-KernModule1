@@ -55,8 +55,10 @@
      <Compile Include="Assets\Scripts\Block.cs" />
      <Compile Include="Assets\Scripts\GameManager.cs" />
      <Compile Include="Assets\Scripts\Grid.cs" />
+     <Compile Include="Assets\Scripts\MenuBehaviour.cs" />
      <Compile Include="Assets\Scripts\SynchronisedBehaviour.cs" />
      <Compile Include="Assets\Scripts\Tetrimino.cs" />
+     <Compile Include="Assets\Scripts\UIButton.cs" />
  <Reference Include="UnityEngine.UI">
  <HintPath>D:/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>

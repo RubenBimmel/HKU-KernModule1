@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : SynchronisedBehaviour {
 
@@ -24,6 +25,11 @@ public class GameManager : SynchronisedBehaviour {
         }
         else
         {
+            if (Input.GetKey("escape"))
+            {
+                SceneManager.LoadScene(0);
+            }
+
             if (Input.GetKey("left"))
             {
                 activeTetrimino.Move(-1, 0);
