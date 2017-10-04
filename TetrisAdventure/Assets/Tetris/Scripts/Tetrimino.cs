@@ -43,22 +43,29 @@ public class Tetrimino {
         return tetriminoCanMove;
     }
 
-    // QQQ
-    // Rotation axis has to be fixed
-    //
     // Public rotate function
     public bool Rotate ()
     {
+        if (shape == TetriminoShape.O)
+        {
+            return true;
+        }
+
+        if (shape == TetriminoShape.I)
+        {
+            //QQQ
+        }
+
         int[,] targetPositions = (int[,])blockPositions.Clone();
         int[,] relativePosition = new int[4, 2];
 
-        for (int i = 0; i < 4; i++)
+        for (int i = 1; i < 4; i++)
         {
-            relativePosition[i, 0] = targetPositions[i, 0] - targetPositions[1, 0];
-            relativePosition[i, 1] = targetPositions[i, 1] - targetPositions[1, 1];
+            relativePosition[i, 0] = targetPositions[i, 0] - targetPositions[0, 0];
+            relativePosition[i, 1] = targetPositions[i, 1] - targetPositions[0, 1];
 
-            targetPositions[i, 0] = targetPositions[1, 0] + relativePosition[i, 1];
-            targetPositions[i, 1] = targetPositions[1, 1] - relativePosition[i, 0];
+            targetPositions[i, 0] = targetPositions[0, 0] + relativePosition[i, 1];
+            targetPositions[i, 1] = targetPositions[0, 1] - relativePosition[i, 0];
         }
 
         bool tetriminoCanMove = grid.TransformTetrimino(blockPositions, targetPositions);
@@ -73,6 +80,7 @@ public class Tetrimino {
     }
 
     // Gets called on initialisation.
+    // First block is anchor for block rotations (I and O use other rotations)
     private int[,] GetBlockPositions()
     {
         int[,] positions = new int[,] { };
@@ -83,22 +91,22 @@ public class Tetrimino {
                 positions = new int[,] { { -1, 0 }, { 0, 0 }, { 1, 0 }, { 2, 0 } };
                 break;
             case TetriminoShape.J:
-                positions = new int[,] { { -1, 0 }, { 0, 0 }, { 1, 0 }, { 1, -1 } };
+                positions = new int[,] { { 0, 0 }, { -1, 0 }, { 1, 0 }, { 1, -1 } };
                 break;
             case TetriminoShape.L:
-                positions = new int[,] { { -1, -1 }, { -1, 0 }, { 0, 0 }, { 1, 0 } };
+                positions = new int[,] { { 0, 0 }, { -1, -1 }, { -1, 0 }, { 1, 0 } };
                 break;
             case TetriminoShape.O:
                 positions = new int[,] { { 0, 0 }, { 0, -1 }, { 1, 0 }, { 1, -1 } };
                 break;
             case TetriminoShape.S:
-                positions = new int[,] { { -1, -1 }, { 0, -1 }, { 0, 0 }, { 1, 0 } };
+                positions = new int[,] { { 0, 0 }, { -1, -1 }, { 0, -1 }, { 1, 0 } };
                 break;
             case TetriminoShape.T:
-                positions = new int[,] { { -1, 0 }, { 0, 0 }, { 0, -1 }, { 1, 0 } };
+                positions = new int[,] { { 0, 0 }, { -1, 0 }, { 0, -1 }, { 1, 0 } };
                 break;
             case TetriminoShape.Z:
-                positions = new int[,] { { -1, 0 }, { 0, 0 }, { 0, -1 }, { 1, -1 } };
+                positions = new int[,] { { 0, 0 }, { -1, 0 }, { 0, -1 }, { 1, -1 } };
                 break;
         }
 

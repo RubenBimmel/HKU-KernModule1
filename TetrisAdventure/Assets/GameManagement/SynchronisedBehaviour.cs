@@ -5,7 +5,7 @@ using UnityEngine;
 public class SynchronisedBehaviour : MonoBehaviour {
 
     public void Awake () {
-        BeatSynchroniser.sendBeat += OnBeat;
+        GamePulse.sendBeat += OnBeat;
     }
 
     // Update is called on every beat

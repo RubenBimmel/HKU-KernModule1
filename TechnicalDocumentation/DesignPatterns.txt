@@ -1,0 +1,4 @@
+Class:			Design Pattern:		Toelichting:
+- Menu			Observer		Om alle UIevents op te vangen
+- GameManager		State Machine		Voor het spawnen en bewegen van tetriminos
+- Synthesizer		Strategy		De synth gebruikt verschillende instrumenten

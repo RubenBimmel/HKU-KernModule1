@@ -51,14 +51,16 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\Scripts\BeatSynchroniser.cs" />
-     <Compile Include="Assets\Scripts\Block.cs" />
-     <Compile Include="Assets\Scripts\GameManager.cs" />
-     <Compile Include="Assets\Scripts\Grid.cs" />
-     <Compile Include="Assets\Scripts\MenuBehaviour.cs" />
-     <Compile Include="Assets\Scripts\SynchronisedBehaviour.cs" />
-     <Compile Include="Assets\Scripts\Tetrimino.cs" />
-     <Compile Include="Assets\Scripts\UIButton.cs" />
+     <Compile Include="Assets\GameManagement\GameManager.cs" />
+     <Compile Include="Assets\GameManagement\GamePulse.cs" />
+     <Compile Include="Assets\GameManagement\SynchronisedBehaviour.cs" />
+     <Compile Include="Assets\Synthesizer\Music.cs" />
+     <Compile Include="Assets\Synthesizer\Synthesizer.cs" />
+     <Compile Include="Assets\Tetris\Scripts\Block.cs" />
+     <Compile Include="Assets\Tetris\Scripts\Grid.cs" />
+     <Compile Include="Assets\Tetris\Scripts\Tetrimino.cs" />
+     <Compile Include="Assets\UI\MenuBehaviour.cs" />
+     <Compile Include="Assets\UI\UIButton.cs" />
  <Reference Include="UnityEngine.UI">
  <HintPath>D:/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>

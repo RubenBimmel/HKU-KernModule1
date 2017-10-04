@@ -7,7 +7,7 @@ public class Grid : MonoBehaviour {
     public const int width = 10;
     public const int height = 20;
     public readonly int[] spawnPosition = new int[] { (int)(.5 * Grid.width), Grid.height - 1 };
-    private const float cellSize = .3f;
+    private const float cellSize = 1f;
     private Block [,] cells;
 
     public Block blockPrefab;
@@ -24,16 +24,14 @@ public class Grid : MonoBehaviour {
 	}
 
     // Use this function to prevent overriding a block
-    public void AddBlock (int blockXPos, int blockYPos)
+    public bool AddBlock (int blockXPos, int blockYPos)
     {
         if (CellIsAvailable(blockXPos, blockYPos))
         {
             cells[blockXPos, blockYPos] = ConstructBlock(blockXPos, blockYPos);
+            return true;
         }
-        else
-        {
-            Debug.LogError("Trying to add a block to a ocupied cell");
-        }
+        return false;
     }
 
     // Gets called to create a block that can be added to the grid
@@ -41,20 +39,20 @@ public class Grid : MonoBehaviour {
     {
         Block newBlock = (Block)Instantiate(blockPrefab, transform.position, transform.rotation);
         newBlock.transform.parent = transform;
-        newBlock.transform.Translate(new Vector3(blockXPos * cellSize, blockYPos * cellSize));
+        newBlock.transform.localPosition = new Vector3(blockXPos, blockYPos);
         return newBlock;
     }
 
     // Use this function to keep the grid clean and matching with transform positions
-    public void MoveBlock (int blockXPos, int blockYPos, int xOffset, int yOffset)
+    public void MoveBlock (int blockXPos, int blockYPos, int targetXPos, int targetYPos)
     {
-        if (CellIsAvailable(blockXPos + xOffset, blockYPos + yOffset))
+        if (CellIsAvailable(targetXPos, targetYPos))
         {
             //Update transform position
-            cells[blockXPos, blockYPos].transform.Translate(new Vector3(xOffset * cellSize, yOffset * cellSize));
+            cells[blockXPos, blockYPos].transform.localPosition = new Vector3(targetXPos, targetYPos);
 
             //Update grid
-            cells[blockXPos + xOffset, blockYPos + yOffset] = cells[blockXPos, blockYPos];
+            cells[targetXPos, targetYPos] = cells[blockXPos, blockYPos];
             cells[blockXPos, blockYPos] = null;
         }
         else
@@ -84,9 +82,7 @@ public class Grid : MonoBehaviour {
 
             for (int i = 0; i < 4; i++)
             {
-                Vector3 transformation = new Vector3(targetPositions[i, 0] - blockPositions[i, 0], targetPositions[i, 1] - blockPositions[i, 1]);
-                tetriminoBlocks[i].transform.Translate(transformation * cellSize);
-
+                tetriminoBlocks[i].transform.localPosition = new Vector3(targetPositions[i, 0], targetPositions[i, 1]);
                 cells[targetPositions[i, 0], targetPositions[i, 1]] = tetriminoBlocks[i];
             }
 
@@ -126,15 +122,17 @@ public class Grid : MonoBehaviour {
     {
         cells[blockXPos, blockYPos] = null;
 
-        if (CellIsAvailable(blockXPos, blockYPos + 1))
+        if (blockYPos < height - 1)
         {
-            MoveBlock (blockXPos, blockYPos + 1, 0, -1);
+            if (cells[blockXPos, blockYPos + 1])
+            {
+                MoveBlock(blockXPos, blockYPos + 1, blockXPos, blockYPos);
+            }
             MoveBlocksDownRecursively(blockXPos, blockYPos + 1);
         }
-
     }
 
-    // Check if cell is empty
+    // Check if cell exists and is empty
     public bool CellIsAvailable(int blockXPos, int blockYPos)
     {
         if (blockXPos >= 0 && blockXPos < width && blockYPos >= 0 && blockYPos < height)
