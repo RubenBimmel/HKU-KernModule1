@@ -4,18 +4,20 @@ using UnityEngine;
 
 public class Tetrimino {
 
-    private Grid grid;
+    private GameGrid grid;
     private enum TetriminoShape { I, J, L, O, S, T, Z };
     private TetriminoShape shape;
     private int[,] blockPositions;
+    private int rotation;
 
     // Constructor
-    public Tetrimino (Grid _grid)
+    public Tetrimino (GameGrid _grid)
     {
         grid = _grid;
 
         shape = (TetriminoShape)Random.Range(0, 6);
         blockPositions = GetBlockPositions();
+        rotation = 0;
 
         for (int i = 0; i < 4; i++)
         {
@@ -51,27 +53,25 @@ public class Tetrimino {
             return true;
         }
 
-        if (shape == TetriminoShape.I)
-        {
-            //QQQ
-        }
-
-        int[,] targetPositions = (int[,])blockPositions.Clone();
+        int[,] targetPositions = new int[4, 2];
         int[,] relativePosition = new int[4, 2];
 
-        for (int i = 1; i < 4; i++)
-        {
-            relativePosition[i, 0] = targetPositions[i, 0] - targetPositions[0, 0];
-            relativePosition[i, 1] = targetPositions[i, 1] - targetPositions[0, 1];
+        int rotationBlock = GetRotationBlock();
 
-            targetPositions[i, 0] = targetPositions[0, 0] + relativePosition[i, 1];
-            targetPositions[i, 1] = targetPositions[0, 1] - relativePosition[i, 0];
+        for (int i = 0; i < 4; i++)
+        {
+            relativePosition[i, 0] = blockPositions[i, 0] - blockPositions[rotationBlock, 0];
+            relativePosition[i, 1] = blockPositions[i, 1] - blockPositions[rotationBlock, 1];
+
+            targetPositions[i, 0] = blockPositions[rotationBlock, 0] + relativePosition[i, 1];
+            targetPositions[i, 1] = blockPositions[rotationBlock, 1] - relativePosition[i, 0];
         }
 
         bool tetriminoCanMove = grid.TransformTetrimino(blockPositions, targetPositions);
 
         if (tetriminoCanMove)
         {
+            rotation = ++rotation % 4;
             blockPositions = targetPositions;
         }
 
@@ -91,22 +91,22 @@ public class Tetrimino {
                 positions = new int[,] { { -1, 0 }, { 0, 0 }, { 1, 0 }, { 2, 0 } };
                 break;
             case TetriminoShape.J:
-                positions = new int[,] { { 0, 0 }, { -1, 0 }, { 1, 0 }, { 1, -1 } };
+                positions = new int[,] { { -1, 0 }, { 0, 0 }, { 1, 0 }, { 1, -1 } };
                 break;
             case TetriminoShape.L:
-                positions = new int[,] { { 0, 0 }, { -1, -1 }, { -1, 0 }, { 1, 0 } };
+                positions = new int[,] { { -1, -1 }, { -1, 0 }, { 0, 0 }, { 1, 0 } };
                 break;
             case TetriminoShape.O:
                 positions = new int[,] { { 0, 0 }, { 0, -1 }, { 1, 0 }, { 1, -1 } };
                 break;
             case TetriminoShape.S:
-                positions = new int[,] { { 0, 0 }, { -1, -1 }, { 0, -1 }, { 1, 0 } };
+                positions = new int[,] { { -1, -1 }, { 0, -1 }, { 0, 0 }, { 1, 0 } };
                 break;
             case TetriminoShape.T:
-                positions = new int[,] { { 0, 0 }, { -1, 0 }, { 0, -1 }, { 1, 0 } };
+                positions = new int[,] { { -1, 0 }, { 0, 0 }, { 0, -1 }, { 1, 0 } };
                 break;
             case TetriminoShape.Z:
-                positions = new int[,] { { 0, 0 }, { -1, 0 }, { 0, -1 }, { 1, -1 } };
+                positions = new int[,] { { -1, 0 }, { 0, 0 }, { 0, -1 }, { 1, -1 } };
                 break;
         }
 
@@ -117,5 +117,26 @@ public class Tetrimino {
         }
 
         return positions;
+    }
+
+    private int GetRotationBlock()
+    {
+        switch (shape)
+        {
+            case TetriminoShape.I:
+                return 1;
+            case TetriminoShape.J:
+                return 1;
+            case TetriminoShape.L:
+                return 2;
+            case TetriminoShape.S:
+                return 2;
+            case TetriminoShape.T:
+                return 1;
+            case TetriminoShape.Z:
+                return 1;
+        }
+
+        return 0;
     }
 }

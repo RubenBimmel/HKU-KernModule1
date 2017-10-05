@@ -57,6 +57,7 @@
      <Compile Include="Assets\Synthesizer\Music.cs" />
      <Compile Include="Assets\Synthesizer\Synthesizer.cs" />
      <Compile Include="Assets\Tetris\Scripts\Block.cs" />
+     <Compile Include="Assets\Tetris\Scripts\GameGrid.cs" />
      <Compile Include="Assets\Tetris\Scripts\Grid.cs" />
      <Compile Include="Assets\Tetris\Scripts\Tetrimino.cs" />
      <Compile Include="Assets\UI\MenuBehaviour.cs" />

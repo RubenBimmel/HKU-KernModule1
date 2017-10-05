@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : SynchronisedBehaviour {
 
-    public Grid grid;
+    public GameGrid grid;
     private Tetrimino activeTetrimino;
 
     // Use this for initialization
