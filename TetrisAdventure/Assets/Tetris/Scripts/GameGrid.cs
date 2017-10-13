@@ -23,19 +23,19 @@ public class GameGrid : Grid {
     }
 
 
-    // Gets called to move, rotate or change a tetrimino. Returns if transformation was possible.
-    public bool TransformTetrimino(int[,] blockPositions, int[,] targetPositions)
+    // Gets called to move, rotate or change a tetromino. Returns if transformation was possible.
+    public bool TransformTetromino(int[,] blockPositions, int[,] targetPositions)
     {
-        if (TetriminoCanMove(blockPositions, targetPositions))
+        if (TetrominoCanMove(blockPositions, targetPositions))
         {
-            Block[] tetriminoBlocks = new Block[4];
+            Block[] tetrominoBlocks = new Block[4];
             for (int i = 0; i < 4; i++)
             {
-                tetriminoBlocks[i] = cells[blockPositions[i, 0], blockPositions[i, 1]];
+                tetrominoBlocks[i] = cells[blockPositions[i, 0], blockPositions[i, 1]];
 
-                if (!tetriminoBlocks[i])
+                if (!tetrominoBlocks[i])
                 {
-                    Debug.LogError(string.Concat("Tetrimino block missing in cell [ ", blockPositions[i, 0], ", ", blockPositions[i, 1], " ]"));
+                    Debug.LogError(string.Concat("Tetromino block missing in cell [ ", blockPositions[i, 0], ", ", blockPositions[i, 1], " ]"));
                     return false;
                 }
 
@@ -44,8 +44,8 @@ public class GameGrid : Grid {
 
             for (int i = 0; i < 4; i++)
             {
-                tetriminoBlocks[i].transform.localPosition = new Vector3(targetPositions[i, 0], targetPositions[i, 1]);
-                cells[targetPositions[i, 0], targetPositions[i, 1]] = tetriminoBlocks[i];
+                tetrominoBlocks[i].transform.localPosition = new Vector3(targetPositions[i, 0], targetPositions[i, 1]);
+                cells[targetPositions[i, 0], targetPositions[i, 1]] = tetrominoBlocks[i];
             }
 
             return true;
@@ -53,9 +53,11 @@ public class GameGrid : Grid {
         return false;
     }
 
-    // Gets called when a Tetrinimo's lifetime has ended
-    public void CheckForFullRow()
+    // Gets called only when a Tetrinimo's lifetime has ended. Else rows will get destroyed while a tetromino is still falling.
+    // Returns the amount of rows that are deleted
+    public int CheckForFullRow()
     {
+        int fullRows = 0;
         // Rows need to be checked in reverse order. Else it will skip the one that has been lowered after removing a row.
         for (int row = height - 1; row >= 0; row--)
         {
@@ -70,6 +72,8 @@ public class GameGrid : Grid {
 
             if (rowIsFull)
             {
+                fullRows++;
+
                 for (int i = 0; i < width; i++)
                 {
                     cells[i, row].Destroy();
@@ -77,6 +81,7 @@ public class GameGrid : Grid {
                 }
             }
         }
+        return fullRows;
     }
 
     // Gets called when a row gets destroyed
@@ -95,13 +100,13 @@ public class GameGrid : Grid {
     }
 
     // Check if multiple blocks can move
-    private bool TetriminoCanMove(int[,] blockPositions, int[,] targetPositions)
+    private bool TetrominoCanMove(int[,] blockPositions, int[,] targetPositions)
     {
-        bool tetriminoCanMove = true;
+        bool tetrominoCanMove = true;
 
         for (int i = 0; i < 4; i++)
         {
-            // Check if target is already occupied by tetrimino
+            // Check if target is already occupied by tetromino
             bool moveToSelf = false;
             for (int j = 0; j < 4; j++)
             {
@@ -114,10 +119,10 @@ public class GameGrid : Grid {
             // Else check if cell is available
             if (!moveToSelf && !CellIsAvailable(targetPositions[i, 0], targetPositions[i, 1]))
             {
-                tetriminoCanMove = false;
+                tetrominoCanMove = false;
             }
         }
 
-        return tetriminoCanMove;
+        return tetrominoCanMove;
     }
 }

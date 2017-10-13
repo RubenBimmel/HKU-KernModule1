@@ -51,6 +51,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\Camera\CameraFix.cs" />
      <Compile Include="Assets\GameManagement\GameManager.cs" />
      <Compile Include="Assets\GameManagement\GamePulse.cs" />
      <Compile Include="Assets\GameManagement\SynchronisedBehaviour.cs" />
@@ -59,7 +60,8 @@
      <Compile Include="Assets\Tetris\Scripts\Block.cs" />
      <Compile Include="Assets\Tetris\Scripts\GameGrid.cs" />
      <Compile Include="Assets\Tetris\Scripts\Grid.cs" />
-     <Compile Include="Assets\Tetris\Scripts\Tetrimino.cs" />
+     <Compile Include="Assets\Tetris\Scripts\Tetromino.cs" />
+     <Compile Include="Assets\UI\CanvasManager.cs" />
      <Compile Include="Assets\UI\MenuBehaviour.cs" />
      <Compile Include="Assets\UI\UIButton.cs" />
  <Reference Include="UnityEngine.UI">

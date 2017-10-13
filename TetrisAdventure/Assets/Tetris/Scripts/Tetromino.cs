@@ -2,27 +2,63 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Tetrimino {
+public class Tetromino {
 
-    private GameGrid grid;
-    private enum TetriminoShape { I, J, L, O, S, T, Z };
-    private TetriminoShape shape;
+    private Grid grid;
+    private enum TetrominoShape { I, J, L, O, S, T, Z };
+    private TetrominoShape shape;
+    private Color colour;
     private int[,] blockPositions;
     private int rotation;
 
     // Constructor
-    public Tetrimino (GameGrid _grid)
+    public Tetromino ()
+    {
+        shape = (TetrominoShape)Random.Range(0, 6);
+        
+        switch (shape)
+        {
+            case TetrominoShape.I:
+                colour = Color.red;
+                break;
+            case TetrominoShape.J:
+                colour = Color.blue;
+                break;
+            case TetrominoShape.L:
+                colour = new Color(1, .25f, 0);
+                break;
+            case TetrominoShape.O:
+                colour = Color.yellow;
+                break;
+            case TetrominoShape.S:
+                colour = Color.magenta;
+                break;
+            case TetrominoShape.T:
+                colour = Color.cyan;
+                break;
+            case TetrominoShape.Z:
+                colour = Color.green;
+                break;
+        }
+
+        rotation = 0;
+    }
+
+    public bool AddToGrid (Grid _grid)
     {
         grid = _grid;
-
-        shape = (TetriminoShape)Random.Range(0, 6);
         blockPositions = GetBlockPositions();
-        rotation = 0;
 
         for (int i = 0; i < 4; i++)
         {
-            grid.AddBlock(blockPositions[i, 0], blockPositions[i, 1]);
+            bool added = grid.AddBlock(blockPositions[i, 0], blockPositions[i, 1], colour);
+            if (!added)
+            {
+                return false;
+            }
         }
+
+        return true;
     }
 
     // Public move function
@@ -35,24 +71,26 @@ public class Tetrimino {
             targetPositions[i, 1] += yOffset;
         }
 
-        bool tetriminoCanMove = grid.TransformTetrimino(blockPositions, targetPositions);
+        bool tetrominoCanMove = ((GameGrid) grid).TransformTetromino(blockPositions, targetPositions);
 
-        if (tetriminoCanMove)
+        if (tetrominoCanMove)
         {
             blockPositions = targetPositions;
         }
 
-        return tetriminoCanMove;
+        return tetrominoCanMove;
     }
 
     // Public rotate function
     public bool Rotate ()
     {
-        if (shape == TetriminoShape.O)
+        //O can not rotate
+        if (shape == TetrominoShape.O)
         {
             return true;
         }
 
+        //calculate new positions for rotated tetromino
         int[,] targetPositions = new int[4, 2];
         int[,] relativePosition = new int[4, 2];
 
@@ -67,15 +105,27 @@ public class Tetrimino {
             targetPositions[i, 1] = blockPositions[rotationBlock, 1] - relativePosition[i, 0];
         }
 
-        bool tetriminoCanMove = grid.TransformTetrimino(blockPositions, targetPositions);
+        //I gets repositioned on rotation
+        if (shape == TetrominoShape.I)
+        {
+            if (rotation % 2 == 1)
+            {
+                for (int i = 0; i < 4; i++)
+                {
+                    targetPositions[i, 0]--;
+                }
+            }
+        }
 
-        if (tetriminoCanMove)
+        bool tetrominoCanMove = ((GameGrid)grid).TransformTetromino(blockPositions, targetPositions);
+
+        if (tetrominoCanMove)
         {
             rotation = ++rotation % 4;
             blockPositions = targetPositions;
         }
 
-        return tetriminoCanMove;
+        return tetrominoCanMove;
 
     }
 
@@ -87,25 +137,25 @@ public class Tetrimino {
 
         switch (shape)
         {
-            case TetriminoShape.I:
+            case TetrominoShape.I:
                 positions = new int[,] { { -1, 0 }, { 0, 0 }, { 1, 0 }, { 2, 0 } };
                 break;
-            case TetriminoShape.J:
+            case TetrominoShape.J:
                 positions = new int[,] { { -1, 0 }, { 0, 0 }, { 1, 0 }, { 1, -1 } };
                 break;
-            case TetriminoShape.L:
+            case TetrominoShape.L:
                 positions = new int[,] { { -1, -1 }, { -1, 0 }, { 0, 0 }, { 1, 0 } };
                 break;
-            case TetriminoShape.O:
+            case TetrominoShape.O:
                 positions = new int[,] { { 0, 0 }, { 0, -1 }, { 1, 0 }, { 1, -1 } };
                 break;
-            case TetriminoShape.S:
+            case TetrominoShape.S:
                 positions = new int[,] { { -1, -1 }, { 0, -1 }, { 0, 0 }, { 1, 0 } };
                 break;
-            case TetriminoShape.T:
+            case TetrominoShape.T:
                 positions = new int[,] { { -1, 0 }, { 0, 0 }, { 0, -1 }, { 1, 0 } };
                 break;
-            case TetriminoShape.Z:
+            case TetrominoShape.Z:
                 positions = new int[,] { { -1, 0 }, { 0, 0 }, { 0, -1 }, { 1, -1 } };
                 break;
         }
@@ -119,22 +169,26 @@ public class Tetrimino {
         return positions;
     }
 
+    //Get anchor for tetromino rotation
     private int GetRotationBlock()
     {
         switch (shape)
         {
-            case TetriminoShape.I:
+            case TetrominoShape.I:
+                if (rotation < 2) return 2;
                 return 1;
-            case TetriminoShape.J:
+            case TetrominoShape.J:
                 return 1;
-            case TetriminoShape.L:
+            case TetrominoShape.L:
                 return 2;
-            case TetriminoShape.S:
+            case TetrominoShape.S:
+                if (rotation < 2) return 1;
                 return 2;
-            case TetriminoShape.T:
+            case TetrominoShape.T:
                 return 1;
-            case TetriminoShape.Z:
-                return 1;
+            case TetrominoShape.Z:
+                if (rotation < 2) return 1;
+                return 2;
         }
 
         return 0;

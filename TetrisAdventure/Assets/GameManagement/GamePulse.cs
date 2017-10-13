@@ -7,7 +7,7 @@ public class GamePulse : MonoBehaviour {
     public delegate void OnBeat(int beat);
     public static event OnBeat sendBeat;
 
-    public float beatSpeed = 10f;
+    public static float beatSpeed = 9000;
     private float timer = 0f;
     private int beat = -1;
 	

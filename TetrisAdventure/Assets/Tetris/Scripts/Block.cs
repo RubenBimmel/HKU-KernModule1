@@ -4,15 +4,10 @@ using UnityEngine;
 
 public class Block : MonoBehaviour {
 
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+    public void setColour (Color colour)
+    {
+        transform.GetComponent<SpriteRenderer>().color = colour;
+    }
 
     public void Destroy ()
     {
