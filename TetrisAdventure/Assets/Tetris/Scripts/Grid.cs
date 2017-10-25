@@ -14,44 +14,42 @@ public class Grid : MonoBehaviour {
     public int[] spawnPosition;
 
     // Use this for initialization
-    void Start ()
-    {
+    void Start () {
         cells = new Block [width, height];
         spawnPosition = new int[] { (int)(.5 * width), height - 1 };
 
-        if (!blockPrefab)
-        {
+        if (!blockPrefab) {
             Debug.LogError("Block Prefab is missing");
         }
 	}
 
     // Use this function to prevent overriding a block
-    public bool AddBlock(int blockXPos, int blockYPos, Color colour)
-    {
-        if (CellIsAvailable(blockXPos, blockYPos))
-        {
-            cells[blockXPos, blockYPos] = ConstructBlock(blockXPos, blockYPos, colour);
+    public bool AddBlock(int blockXPos, int blockYPos, Color colour, Block prefab) {
+        if (CellIsAvailable(blockXPos, blockYPos)) {
+            cells[blockXPos, blockYPos] = ConstructBlock(blockXPos, blockYPos, prefab, colour);
             return true;
         }
         return false;
     }
 
-    // Use this function to prevent overriding a block
-    public bool AddBlock(int blockXPos, int blockYPos)
-    {
+    // Using default prefab
+    public bool AddBlock(int blockXPos, int blockYPos, Color colour) {
+        return AddBlock(blockXPos, blockYPos, colour, blockPrefab);
+    }
+
+    // Using default prefab and colour white
+    public bool AddBlock(int blockXPos, int blockYPos) {
         return AddBlock(blockXPos, blockYPos, Color.white);
     }
 
     // Get referance to block
-    public Block GetBlock (int blockXPos, int blockYPos)
-    {
+    public Block GetBlock (int blockXPos, int blockYPos) {
         return cells[blockXPos, blockYPos];
     }
 
     // Gets called to create a block that can be added to the grid
-    private Block ConstructBlock (int blockXPos, int blockYPos, Color colour)
-    {
-        Block newBlock = Instantiate<Block>(blockPrefab, transform.position, transform.rotation);
+    private Block ConstructBlock (int blockXPos, int blockYPos, Block prefab, Color colour) {
+        Block newBlock = Instantiate<Block>(prefab, transform.position, transform.rotation);
         newBlock.transform.parent = transform;
         newBlock.transform.localPosition = new Vector3(blockXPos, blockYPos);
         newBlock.SetColour(colour);
@@ -60,13 +58,11 @@ public class Grid : MonoBehaviour {
     }
 
     // Used by non grid objects to get the world space position of a block
-    public Vector2 GetWorldPosition(int blockXPos, int blockYPos)
-    {
+    public Vector2 GetWorldPosition(int blockXPos, int blockYPos) {
         return transform.TransformPoint(new Vector2(blockXPos, blockYPos));
     }
 
-    public int[] GetLocalPosition(Vector2 WorldPos)
-    {
+    public int[] GetLocalPosition(Vector2 WorldPos) {
         Vector2 localPos = transform.InverseTransformPoint(WorldPos);
         int x = Mathf.RoundToInt(localPos.x);
         int y = Mathf.RoundToInt(localPos.y);
@@ -74,15 +70,11 @@ public class Grid : MonoBehaviour {
     }
 
     // Check if cell exists and is empty
-    public bool CellIsAvailable(int blockXPos, int blockYPos)
-    {
-        if (blockXPos >= 0 && blockXPos < width && blockYPos >= 0 && blockYPos < height)
-        {
+    public bool CellIsAvailable(int blockXPos, int blockYPos) {
+        if (blockXPos >= 0 && blockXPos < width && blockYPos >= 0 && blockYPos < height) {
             Collider2D[] colliders = Physics2D.OverlapBoxAll(GetWorldPosition(blockXPos, blockYPos), transform.TransformVector(Vector2.one * .95f), 0);
-            foreach (Collider2D collider in colliders)
-            {
-                if (collider.gameObject.tag == "GridBlocker")
-                {
+            foreach (Collider2D collider in colliders) {
+                if (collider.gameObject.tag == "GridBlocker") {
                     return false;
                 }
             }
@@ -93,23 +85,17 @@ public class Grid : MonoBehaviour {
     }
 
     // Get heighest block in a row (used to calculate spawn positions for coins etc.)
-    public int getHeighestAvailableCellInColumn(int column, int[,] maskPositions)
-    {
-        for (int row = height - 1; row >= 0; row--)
-        {
-            if (!CellIsAvailable(column, row))
-            {
+    public int getHeighestAvailableCellInColumn(int column, int[,] maskPositions) {
+        for (int row = height - 1; row >= 0; row--) {
+            if (!CellIsAvailable(column, row)) {
                 bool masked = false;
-                for (int i = 0; i < 4; i++ )
-                {
-                    if (column == maskPositions[i,0] && row == maskPositions[i,1])
-                    {
+                for (int i = 0; i < 4; i++ ) {
+                    if (column == maskPositions[i,0] && row == maskPositions[i,1]) {
                         masked = true;
                         Debug.Log("InMask");
                     }
                 }
-                if (!masked)
-                {
+                if (!masked) {
                     return row + 1;
                 }
             }
@@ -118,34 +104,26 @@ public class Grid : MonoBehaviour {
     }
 
     // Empty mask version
-    public int getHeighestAvailableCellInColumn(int column)
-    {
+    public int getHeighestAvailableCellInColumn(int column) {
         return getHeighestAvailableCellInColumn(column, new int[,] { { -1, -1 }, { -1, -1 }, { -1, -1 }, { -1, -1 } });
     }
 
     // Clear a Cell
-    public void ClearCell(int blockXPos, int blockYPos)
-    {
-        if (!CellIsAvailable(blockXPos, blockYPos))
-        {
+    public void ClearCell(int blockXPos, int blockYPos) {
+        if (!CellIsAvailable(blockXPos, blockYPos)) {
             cells[blockXPos, blockYPos].Destroy();
             cells[blockXPos, blockYPos] = null;
         }
-        else
-        {
+        else {
             Debug.LogWarning("Trying to clear a cell that is already empty");
         }
     }
 
     // Clears the Grid
-    public void ClearGrid()
-    {
-        for (int i = 0; i < width; i ++)
-        {
-            for (int j = 0; j < height; j ++)
-            {
-                if (cells[i, j])
-                {
+    public void ClearGrid() {
+        for (int i = 0; i < width; i ++) {
+            for (int j = 0; j < height; j ++) {
+                if (cells[i, j]) {
                     cells[i, j].Destroy();
                     cells[i, j] = null;
                 }

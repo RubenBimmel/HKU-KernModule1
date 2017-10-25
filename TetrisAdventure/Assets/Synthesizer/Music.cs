@@ -2,13 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace synth
-{
-
-    public static class Music
-    {
-        public static double[,] notes =
-        {
+namespace synth {
+    // Contains all frequencies for notes in the soundtrack. The music uses three tone channels and a noise channel
+    public static class Music {
+        public static double[,] notes = {
             {659.3, 164.8, 493.9 },
             {-1, -1, -1 },
             {-1, -1, 0 },
@@ -395,8 +392,7 @@ namespace synth
             {-1, -1, -1 }
         };
 
-        public static int[] noise =
-        {
+        public static int[] noise = {
             0,
             0,
             1,
@@ -430,7 +426,5 @@ namespace synth
             1,
             0
         };
-
     }
-
 }

@@ -27,15 +27,12 @@ public class TetrisController : SynchronisedBehaviour {
     private int horizontalMovement;
 
     // Use this for initialization
-    void Start()
-    {
-        if (!gameGrid || !previewGrid)
-        {
+    void Start() {
+        if (!gameGrid || !previewGrid) {
             Debug.LogError("Grid is missing");
         }
 
-        if (!manager)
-        {
+        if (!manager) {
             Debug.LogError("Game manager is missing");
         }
 
@@ -44,8 +41,7 @@ public class TetrisController : SynchronisedBehaviour {
     }
 
     // Update is only used to check if player has given input inbetween beats
-    void Update()
-    {
+    void Update() {
         if (Input.GetButtonDown("TetrisUp"))     rotate = true;
         if (Input.GetButtonDown("TetrisLeft"))   horizontalMovement--;
         if (Input.GetButtonDown("TetrisRight"))  horizontalMovement++;
@@ -54,8 +50,7 @@ public class TetrisController : SynchronisedBehaviour {
     // Gets called every beat
     public override void OnBeat (int beat) {
 
-        switch (state)
-        {
+        switch (state) {
             case TetrisState.start:
                 previewGrid.ClearGrid();
                 gameGrid.ClearGrid();
@@ -64,71 +59,61 @@ public class TetrisController : SynchronisedBehaviour {
                 break;
 
             case TetrisState.newBlock:
-                if (nextTetromino == null)
-                {
+                // add active tetromino
+                if (nextTetromino == null) {
                     activeTetromino = new Tetromino();
                 }
-                else
-                {
+                else {
                     activeTetromino = nextTetromino;
                 }
 
                 previewGrid.ClearGrid();
-                if (activeTetromino.AddToGrid(gameGrid))
-                {
+                if (activeTetromino.AddToGrid(gameGrid)) {
+                    // add next tetromino
                     nextTetromino = new Tetromino();
-
                     nextTetromino.AddToGrid(previewGrid);
-                    state = TetrisState.blockIsMoving;
-
+                    
+                    // update all game parameters
                     manager.OnNewTetromino(activeTetromino, tetrominoCounter, gameGrid);
                     tetrominoCounter++;
-
-                    if (GameManager.type == GameManager.GameType.Adventure)
-                    {
-                        if (tetrominoCounter % TETROMINOS_FOR_NEXT_COIN == 0)
-                        {
+                    if (GameManager.type == GameManager.GameType.Adventure) {
+                        if (tetrominoCounter % TETROMINOS_FOR_NEXT_COIN == 0) {
                             addCoinOnRandomCell();
                         }
 
-                        if (addSlowDown)
-                        {
+                        if (addSlowDown) {
                             SlowDown newSD = Instantiate<SlowDown>(manager.slowDownPrefab, new Vector3(100, 100, 1), Quaternion.identity);
                             newSD.SetManager(manager);
                             nextTetromino.AddCollectable(newSD);
                         }
                     }
+
+                    state = TetrisState.blockIsMoving;
                 }
-                else
-                {
+                else {
                     manager.GameIsOver();
                 }
 
                 break;
 
             case TetrisState.blockIsMoving:
-                if ((Input.GetButton("TetrisLeft") || horizontalMovement < 0) && beat % 2 == 0)
-                {
+                if ((Input.GetButton("TetrisLeft") || horizontalMovement < 0) && beat % 2 == 0) {
                     horizontalMovement = 0;
                     activeTetromino.Move(-1, 0);
                 }
 
-                if ((Input.GetButton("TetrisRight") || horizontalMovement > 0) && beat % 2 == 0)
-                {
+                if ((Input.GetButton("TetrisRight") || horizontalMovement > 0) && beat % 2 == 0) {
                     horizontalMovement = 0;
                     activeTetromino.Move(1, 0);
                 }
 
-                if (rotate)
-                {
+                if (rotate) {
                     activeTetromino.Rotate();
                     rotate = false;
                 }
 
-                if (Input.GetButton("TetrisDown") || beat % 4 == 0)
-                {
-                    if (!activeTetromino.Move(0, -1))
-                    {
+                if (Input.GetButton("TetrisDown") || beat % 4 == 0) {
+                    if (!activeTetromino.Move(0, -1)) {
                         state = TetrisState.blockHasLanded;
                     }
                 }
@@ -144,8 +129,7 @@ public class TetrisController : SynchronisedBehaviour {
                 addSlowDown = rowsDeleted >= 3;
 
                 rowCounter += rowsDeleted;
-                if (rowCounter > ROWS_FOR_SPEED_UP)
-                {
+                if (rowCounter > ROWS_FOR_SPEED_UP) {
                     rowCounter -= ROWS_FOR_SPEED_UP;
                     manager.addSpeed(1);
                 }
@@ -157,12 +141,11 @@ public class TetrisController : SynchronisedBehaviour {
         }
     }
 
-    private void addCoinOnRandomCell()
-    {
+    // Gets called to calculate a random position for a coin
+    private void addCoinOnRandomCell() {
         int column = Random.Range(0, gameGrid.width);
         int row = gameGrid.getHeighestAvailableCellInColumn(column, activeTetromino.blockPositions);
-        if (row < gameGrid.height)
-        {
+        if (row < gameGrid.height) {
             // Coin hovers on a random cell, 2 to 4 blocks above the block
             row = Mathf.Min(row + Random.Range(2, 4), gameGrid.height - 1);
 

@@ -22,8 +22,7 @@ public class GamePulse : MonoBehaviour {
         if (timer >= beatTime) {
             beat++;
 
-            if (sendBeat != null)
-            {
+            if (sendBeat != null) {
                 sendBeat(beat);
             }
 
@@ -31,27 +30,21 @@ public class GamePulse : MonoBehaviour {
         }
 	}
 
-    public void SetBeatSpeed (float speed)
-    {
+    // Set speed instantly
+    public void SetBeatSpeed (float speed) {
         beatSpeed = speed;
     }
 
-    public void SetBeatSpeedOverTime(float targetSpeed, float t)
-    {
+    // Set speed over time
+    public void SetBeatSpeedOverTime(float targetSpeed, float t) {
         lerpTimer = Time.time + t;
         targetBeatSpeed = targetSpeed;
         StartCoroutine("LerpBeatSpeed");
     }
 
-    public void Reset()
-    {
-        beat = 0;
-    }
-
-    private IEnumerator LerpBeatSpeed()
-    {
-        while (Time.time < lerpTimer)
-        {
+    // Coroutine that lerps speed
+    private IEnumerator LerpBeatSpeed() {
+        while (Time.time < lerpTimer) {
             beatSpeed = Mathf.Lerp(beatSpeed, targetBeatSpeed, lerpTimer - Time.time);
             yield return null;
         }

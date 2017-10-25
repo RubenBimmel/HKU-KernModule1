@@ -4,16 +4,17 @@ using UnityEngine;
 
 public class SynchronisedBehaviour : MonoBehaviour {
 
+    // Adds this to sendBeat event
     public void Awake () {
         GamePulse.sendBeat += OnBeat;
     }
 
-    public void OnDestroy ()
-    {
+    // Removes this to sendBeat event
+    public void OnDestroy () {
         GamePulse.sendBeat -= OnBeat;
     }
 
-    // Update is called on every beat
+    // OnBeat is called by GamePulse on every beat
     public virtual void OnBeat (int beat) {
 		
 	}
