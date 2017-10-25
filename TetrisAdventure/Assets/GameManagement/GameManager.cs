@@ -3,138 +3,91 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+[RequireComponent(typeof(GamePulse))]
+
 public class GameManager : SynchronisedBehaviour {
 
-    private enum TetrisState { start, newBlock, blockIsMoving, blockHasLanded, gameOver}
-    private TetrisState state;
-
-    public GameGrid gameGrid;
-    public Grid previewGrid;
-    private Tetromino activeTetromino;
-    private Tetromino nextTetromino;
-
-    public int tetrisSpeed;
-    private const int tetrisStartSpeed = 10;
-    private int rowCounter;
-    private const int ROWS_FOR_SPEED_UP = 8;
+    private GamePulse gamePulse;
+    private int gameSpeed;
+    private const int MINIMUM_GAME_SPEED = 10;
 
     public CanvasManager canvas;
+    private int score;
+    public synth.Synthesizer synthesizer;
 
-    private bool rotate;
+    public Coin coinPrefab;
+    public SlowDown slowDownPrefab;
 
     // Use this for initialization
     void Start()
     {
-        if (!gameGrid || !previewGrid)
-        {
-            Debug.LogError("Grid is missing");
-        }
 
         if (!canvas)
         {
             Debug.LogError("Canvas is missing");
         }
 
-        state = TetrisState.start;
-        tetrisSpeed = 0;
-        rowCounter = 0;
-    }
-
-    void LateUpdate()
-    {
-        if (Input.GetKeyDown("up"))
+        if (!coinPrefab)
         {
-            rotate = true;
+            Debug.LogError("Coin prefab is missing");
         }
+
+        if (!slowDownPrefab)
+        {
+            Debug.LogError("SlowDown prefab is missing");
+        }
+
+        gamePulse = transform.GetComponent<GamePulse>();
+        gameSpeed = 0;
     }
 
-    // Gets called every beat
-    public override void OnBeat (int beat) {
-        if (Input.GetKey("escape"))
+    void Update()
+    {
+        if (Input.GetButton("Cancel"))
         {
             SceneManager.LoadScene(0);
         }
+    }
 
-        switch (state)
-        {
-            case TetrisState.start:
-                previewGrid.ClearGrid();
-                gameGrid.ClearGrid();
+    public int getSpeed ()
+    {
+        return gameSpeed;
+    }
 
-                nextTetromino = new Tetromino();
-                nextTetromino.AddToGrid(previewGrid);
+    public void setSpeed (int speed) {
+        gameSpeed = speed;
+        gamePulse.setBeatSpeedOverTime(MINIMUM_GAME_SPEED + gameSpeed, 8 - gameSpeed);
+        canvas.setSpeedText(gameSpeed);
+    }
 
-                GamePulse.beatSpeed = tetrisStartSpeed;
-                tetrisSpeed = 0;
-                canvas.setSpeedText(tetrisSpeed);
+    public void setSpeedOverTime(int speed, float t)
+    {
+        gameSpeed = speed;
+        gamePulse.setBeatSpeedOverTime(MINIMUM_GAME_SPEED + gameSpeed, t);
+        canvas.setSpeedText(gameSpeed);
+    }
 
-                state = TetrisState.newBlock;
-                break;
+    public void addSpeed(int speed)
+    {
+        setSpeed(gameSpeed + speed);
+    }
 
-            case TetrisState.newBlock:
-                if (nextTetromino == null)
-                {
-                    activeTetromino = new Tetromino();
-                }
-                else
-                {
-                    activeTetromino = nextTetromino;
-                }
+    public void addScore(int points)
+    {
+        score += points;
+        canvas.setScoreText(score);
+    }
 
-                previewGrid.ClearGrid();
-                if (activeTetromino.AddToGrid(gameGrid))
-                {
-                    nextTetromino = new Tetromino();
-                    nextTetromino.AddToGrid(previewGrid);
-                    state = TetrisState.blockIsMoving;
-                }
-                else
-                {
-                    state = TetrisState.gameOver;
-                }
-                break;
+    public void AddCoin(float x, float y)
+    {
+        Coin newCoin = Instantiate<Coin>(coinPrefab, new Vector3(x, y, 1), Quaternion.identity);
+        newCoin.transform.parent = transform;
+        newCoin.SetManager(this);
+        newCoin.SetActive(true);
+    }
 
-            case TetrisState.blockIsMoving:
-                if (Input.GetKey("left"))
-                {
-                    activeTetromino.Move(-1, 0);
-                }
-
-                if (Input.GetKey("right"))
-                {
-                    activeTetromino.Move(1, 0);
-                }
-
-                if (rotate)
-                {
-                    activeTetromino.Rotate();
-                    rotate = false;
-                }
-
-                if (Input.GetKey("down") || beat % 4 == 0)
-                {
-                    if (!activeTetromino.Move(0, -1))
-                    {
-                        state = TetrisState.blockHasLanded;
-                    }
-                }
-                break;
-
-            case TetrisState.blockHasLanded:
-                activeTetromino = null;
-                rowCounter += gameGrid.CheckForFullRow();
-                if (rowCounter > ROWS_FOR_SPEED_UP)
-                {
-                    rowCounter -= ROWS_FOR_SPEED_UP;
-                    tetrisSpeed++;
-                    GamePulse.beatSpeed = tetrisStartSpeed + tetrisSpeed;
-                    canvas.setSpeedText(tetrisSpeed);
-                }
-                state = TetrisState.newBlock;
-                break;
-
-            case TetrisState.gameOver:
-                break;
-        }
-	}
+    public void GameIsOver()
+    {
+        Time.timeScale = 0;
+    }
 }

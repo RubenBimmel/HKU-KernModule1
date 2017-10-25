@@ -8,8 +8,9 @@ public class Tetromino {
     private enum TetrominoShape { I, J, L, O, S, T, Z };
     private TetrominoShape shape;
     private Color colour;
-    private int[,] blockPositions;
+    public int[,] blockPositions;
     private int rotation;
+    private Collectable[] collectables = new Collectable[4];
 
     // Constructor
     public Tetromino ()
@@ -44,6 +45,19 @@ public class Tetromino {
         rotation = 0;
     }
 
+    public bool AddCollectable (Collectable newCollectable)
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            if (collectables[i] == null)
+            {
+                collectables[i] = newCollectable;
+                return true;
+            }
+        }
+        return false;
+    }
+
     public bool AddToGrid (Grid _grid)
     {
         grid = _grid;
@@ -55,6 +69,11 @@ public class Tetromino {
             if (!added)
             {
                 return false;
+            }
+            if (collectables[i])
+            {
+                grid.GetBlock(blockPositions[i, 0], blockPositions[i, 1]).AddCollectable(collectables[i]);
+                collectables[i].SetActive(false);
             }
         }
 

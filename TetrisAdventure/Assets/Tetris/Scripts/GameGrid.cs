@@ -4,8 +4,20 @@ using UnityEngine;
 
 public class GameGrid : Grid {
 
+    // Adds a block using world space coordinates, used by the character.
+    public int[] AddBlock(Vector2 WorldPos)
+    {
+        int[] localPos = GetLocalPosition(WorldPos);
+
+        if (AddBlock(localPos[0], localPos[1]))
+        {
+            return localPos;
+        }
+        return null;
+    }
+
     // Use this function to keep the grid clean and matching with transform positions
-    public void MoveBlock(int blockXPos, int blockYPos, int targetXPos, int targetYPos)
+    private void MoveBlock(int blockXPos, int blockYPos, int targetXPos, int targetYPos)
     {
         if (CellIsAvailable(targetXPos, targetYPos))
         {
@@ -15,13 +27,34 @@ public class GameGrid : Grid {
             //Update grid
             cells[targetXPos, targetYPos] = cells[blockXPos, blockYPos];
             cells[blockXPos, blockYPos] = null;
+
+            //Update character collision
+            cells[targetXPos, targetYPos].CheckCharacterCollision();
         }
         else
         {
-            Debug.LogError("Trying to move a block to a ocupied cell");
+            Debug.LogError("Trying to move a block to an ocupied cell");
         }
     }
 
+    // Public move function used by non tetris mechanics that can adjust the grid
+    // This function returns the blocks positions to make sure it wont lose track of the object.
+    public int[] MoveBlock(int[] blockPos, int xOffset, int yOffset)
+    {
+        if (CellIsAvailable(blockPos[0], blockPos[1]))
+        {
+            Debug.LogWarning("Trying to move an empty cell");
+            return blockPos;
+        }
+
+        int[] targetPos = new int[] { blockPos[0] + xOffset, blockPos[1] + yOffset };
+        if (CellIsAvailable(targetPos[0], targetPos[1]))
+        {
+            MoveBlock(blockPos[0], blockPos[1], targetPos[0], targetPos[1]);
+            return targetPos;
+        }
+        return blockPos;
+    }
 
     // Gets called to move, rotate or change a tetromino. Returns if transformation was possible.
     public bool TransformTetromino(int[,] blockPositions, int[,] targetPositions)
@@ -44,8 +77,14 @@ public class GameGrid : Grid {
 
             for (int i = 0; i < 4; i++)
             {
+                // Update transform positions
                 tetrominoBlocks[i].transform.localPosition = new Vector3(targetPositions[i, 0], targetPositions[i, 1]);
+
+                // Update grid
                 cells[targetPositions[i, 0], targetPositions[i, 1]] = tetrominoBlocks[i];
+
+                //Update character collision
+                cells[targetPositions[i, 0], targetPositions[i, 1]].CheckCharacterCollision();
             }
 
             return true;

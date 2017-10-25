@@ -7,6 +7,7 @@ public class CanvasManager : MonoBehaviour {
 
     private Text levelText;
     private Text speedText;
+    private Text scoreText;
 
     void Awake ()
     {
@@ -21,6 +22,12 @@ public class CanvasManager : MonoBehaviour {
         {
             Debug.LogError("Text_level not found");
         }
+
+        scoreText = transform.Find("Text_score").GetComponent<Text>();
+        if (!scoreText)
+        {
+            Debug.LogError("Text_score not found");
+        }
     }
 
     public void setLevelText (int level)
@@ -31,6 +38,11 @@ public class CanvasManager : MonoBehaviour {
     public void setSpeedText(int speed)
     {
         speedText.text = speed.ToString();
+    }
+
+    public void setScoreText(int score)
+    {
+        scoreText.text = string.Concat(" ",score.ToString());
     }
 
 }

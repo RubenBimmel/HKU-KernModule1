@@ -17,13 +17,17 @@ namespace synth
         private double[] frequency;
         private double[] phase;
         private float[] time;
+        private float noiseTime;
+        private bool leadSustain;
 
         public enum Sound { triangle, square, noise}
+        private Sound[] voiceChannels = {Sound.triangle, Sound.triangle, Sound.square };
 
         private System.Random rand = new System.Random();
 
         private const float a = 0f;
         private const float d = .5f;
+        private const float d2 = .1f;
         private const float sV = .1f;
         private const float s = 5f;
 
@@ -33,6 +37,7 @@ namespace synth
             phase = new double[voices];
             frequency = new double[voices];
             time = new float[voices];
+            noiseTime = 1;
         }
 
         public override void OnBeat(int beat)
@@ -46,6 +51,12 @@ namespace synth
                     time[i] = 0;
                 }
             }
+            leadSustain = (note >= 256);
+
+            if (Music.noise[note % 32] == 1)
+            {
+                noiseTime = 0;
+            }
         }
 
         void OnAudioFilterRead(float[] data, int channels)
@@ -58,24 +69,24 @@ namespace synth
                 // update increment in case frequency has changed
                 for (int i = 0; i < voices; i++)
                 {
-                    if (i < 2)
+                    bool sustain = (i == 0) && leadSustain;
+
+                    if (!sustain)
                     {
                         time[i] += (float)increment;
-
-                        phase[i] += frequency[i] * increment;
-                        if (phase[i] > 1)
-                        {
-                            phase[i] -= 1;
-                        }
-
-                        output += amplification * getAudio(phase[i], time[i], Sound.triangle);
                     }
-                    else
+
+                    phase[i] += frequency[i] * increment;
+                    if (phase[i] > 1)
                     {
-                        if(frequency[i]>0)
-                            output += amplification * getAudio(0, time[i], Sound.noise);
+                        phase[i] -= 1;
                     }
+
+                    output += amplification * getAudio(phase[i], time[i], voiceChannels[i]);
                 }
+
+                noiseTime += (float)increment;
+                output += amplification * getAudio(0, noiseTime, Sound.noise);
 
                 // if we have stereo, we copy the mono data to each channel
                 data[iterator] = output;
@@ -86,28 +97,30 @@ namespace synth
         private float getAudio(double phase, float time, Sound sound)
         {
             float value = 0;
-            float gain = envelope(time);
+            float gain  = 0;
 
             switch (sound)
             {
                 case Sound.triangle:
+                    gain = adsrEnvelope(time);
                     double triangle = phase * 4 - 1;
                     if (triangle > 1) triangle = 1 - triangle;
                     value = Mathf.Floor((float)triangle * 16) / 16;
                     break;
                 case Sound.square:
+                    gain = adsrEnvelope(time);
                     if (phase > .5) value = 1;
                     break;
                 case Sound.noise:
+                    gain = adEnvelope(time);
                     value = (float)(rand.NextDouble() * 2 - 1);
-                    gain = (gain - .995f) * 100;
                     break;
             }
 
             return value * gain;
         }
 
-        private float envelope(float time)
+        private float adsrEnvelope(float time)
         {
             float value = 0;
             if (time < a)
@@ -121,6 +134,20 @@ namespace synth
             else if (time < (a + d + s))
             {
                 value = sV - (time - a - d) / s * sV;
+            }
+            return value;
+        }
+
+        private float adEnvelope(float time)
+        {
+            float value = 0;
+            if (time < a)
+            {
+                value = time / a;
+            }
+            else if (time < (a + d2))
+            {
+                value = 1 - (time - a) / d2;
             }
             return value;
         }

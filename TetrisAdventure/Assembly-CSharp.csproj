@@ -52,14 +52,22 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\Camera\CameraFix.cs" />
+     <Compile Include="Assets\Character\CharacterModel.cs" />
+     <Compile Include="Assets\Character\Enemies\Scripts\EnemyController.cs" />
+     <Compile Include="Assets\Character\ICharacterController.cs" />
+     <Compile Include="Assets\Character\Player\PlayerController.cs" />
      <Compile Include="Assets\GameManagement\GameManager.cs" />
      <Compile Include="Assets\GameManagement\GamePulse.cs" />
      <Compile Include="Assets\GameManagement\SynchronisedBehaviour.cs" />
+     <Compile Include="Assets\Items\Scripts\Coin.cs" />
+     <Compile Include="Assets\Items\Scripts\Collectable.cs" />
+     <Compile Include="Assets\Items\Scripts\SlowDown.cs" />
      <Compile Include="Assets\Synthesizer\Music.cs" />
      <Compile Include="Assets\Synthesizer\Synthesizer.cs" />
      <Compile Include="Assets\Tetris\Scripts\Block.cs" />
      <Compile Include="Assets\Tetris\Scripts\GameGrid.cs" />
      <Compile Include="Assets\Tetris\Scripts\Grid.cs" />
+     <Compile Include="Assets\Tetris\Scripts\TetrisController.cs" />
      <Compile Include="Assets\Tetris\Scripts\Tetromino.cs" />
      <Compile Include="Assets\UI\CanvasManager.cs" />
      <Compile Include="Assets\UI\MenuBehaviour.cs" />
