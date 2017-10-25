@@ -78,6 +78,15 @@ public class Grid : MonoBehaviour {
     {
         if (blockXPos >= 0 && blockXPos < width && blockYPos >= 0 && blockYPos < height)
         {
+            Collider2D[] colliders = Physics2D.OverlapBoxAll(GetWorldPosition(blockXPos, blockYPos), transform.TransformVector(Vector2.one * .95f), 0);
+            foreach (Collider2D collider in colliders)
+            {
+                if (collider.gameObject.tag == "GridBlocker")
+                {
+                    return false;
+                }
+            }
+
             return !cells[blockXPos, blockYPos];
         }
         return false;

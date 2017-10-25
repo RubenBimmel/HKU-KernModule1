@@ -15,6 +15,11 @@ public class CharacterModel : MonoBehaviour {
 
     void Awake()
     {
+        if (GameManager.type == GameManager.GameType.Classic)
+        {
+            gameObject.SetActive(false);
+        }
+
         rigidbody = transform.GetComponent<Rigidbody2D>();
     }
 
@@ -37,8 +42,13 @@ public class CharacterModel : MonoBehaviour {
         }
     }
 
+    public void Bounce ()
+    {
+        rigidbody.velocity = new Vector2(rigidbody.velocity.x, CHARACTER_JUMP_FORCE);
+    }
+
     private bool IsGrounded()
     {
-        return Physics2D.OverlapCircle(transform.TransformPoint(Vector3.down * distanceToFeet), 0.1f, 1);
+        return Physics2D.OverlapCircle(transform.TransformPoint(Vector3.down * distanceToFeet), 0.05f, 1);
     }
 }

@@ -15,9 +15,28 @@ public class MenuBehaviour : MonoBehaviour {
         SceneManager.LoadScene(1);
     }
 
-    public void ToSettings ()
+    public void StartAdventure ()
     {
+        GameManager.type = GameManager.GameType.Adventure;
         SceneManager.LoadScene(2);
+    }
+
+    public void StartClassic ()
+    {
+        GameManager.type = GameManager.GameType.Classic;
+        SceneManager.LoadScene(3);
+    }
+
+    public void ChangeLevel (int value)
+    {
+        GameManager.levelAtStart += value;
+        GameManager.levelAtStart = Mathf.Clamp(GameManager.levelAtStart, 0, 10);
+    }
+
+    public void ChangeSpeed(int value)
+    {
+        GameManager.gameSpeedAtStart += value;
+        GameManager.gameSpeedAtStart = Mathf.Clamp(GameManager.gameSpeedAtStart, 0, 10);
     }
 
     public void ToMenu ()

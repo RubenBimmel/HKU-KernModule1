@@ -60,38 +60,48 @@ public class TetrisController : SynchronisedBehaviour {
                 previewGrid.ClearGrid();
                 gameGrid.ClearGrid();
 
-                manager.setSpeed(0);
-
                 state = TetrisState.newBlock;
                 break;
 
             case TetrisState.newBlock:
-                if (nextTetromino == null) activeTetromino = new Tetromino();
-                else                       activeTetromino = nextTetromino;
+                if (nextTetromino == null)
+                {
+                    activeTetromino = new Tetromino();
+                }
+                else
+                {
+                    activeTetromino = nextTetromino;
+                }
 
                 previewGrid.ClearGrid();
                 if (activeTetromino.AddToGrid(gameGrid))
                 {
                     nextTetromino = new Tetromino();
-                    if (addSlowDown)
-                    {
-                        SlowDown newSD = Instantiate<SlowDown>(manager.slowDownPrefab, new Vector3(100, 100, 1), Quaternion.identity);
-                        newSD.SetManager(manager);
-                        nextTetromino.AddCollectable(newSD);
-                    }
 
                     nextTetromino.AddToGrid(previewGrid);
                     state = TetrisState.blockIsMoving;
+
+                    manager.OnNewTetromino(activeTetromino, tetrominoCounter, gameGrid);
+                    tetrominoCounter++;
+
+                    if (GameManager.type == GameManager.GameType.Adventure)
+                    {
+                        if (tetrominoCounter % TETROMINOS_FOR_NEXT_COIN == 0)
+                        {
+                            addCoinOnRandomCell();
+                        }
+
+                        if (addSlowDown)
+                        {
+                            SlowDown newSD = Instantiate<SlowDown>(manager.slowDownPrefab, new Vector3(100, 100, 1), Quaternion.identity);
+                            newSD.SetManager(manager);
+                            nextTetromino.AddCollectable(newSD);
+                        }
+                    }
                 }
                 else
                 {
                     manager.GameIsOver();
-                }
-
-                tetrominoCounter++;
-                if (tetrominoCounter % TETROMINOS_FOR_NEXT_COIN == 0)
-                {
-                    addCoinOnRandomCell ();
                 }
 
                 break;

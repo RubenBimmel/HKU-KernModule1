@@ -5,8 +5,8 @@ using UnityEngine;
 public class Tetromino {
 
     private Grid grid;
-    private enum TetrominoShape { I, J, L, O, S, T, Z };
-    private TetrominoShape shape;
+    public enum TetrominoShape { I, J, L, O, S, T, Z };
+    public TetrominoShape shape;
     private Color colour;
     public int[,] blockPositions;
     private int rotation;
@@ -26,7 +26,7 @@ public class Tetromino {
                 colour = Color.blue;
                 break;
             case TetrominoShape.L:
-                colour = new Color(1, .25f, 0);
+                colour = new Color(1, .5f, 0);
                 break;
             case TetrominoShape.O:
                 colour = Color.yellow;

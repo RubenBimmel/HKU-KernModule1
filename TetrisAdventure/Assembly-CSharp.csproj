@@ -71,7 +71,7 @@
      <Compile Include="Assets\Tetris\Scripts\Tetromino.cs" />
      <Compile Include="Assets\UI\CanvasManager.cs" />
      <Compile Include="Assets\UI\MenuBehaviour.cs" />
-     <Compile Include="Assets\UI\UIButton.cs" />
+     <Compile Include="Assets\UI\UIValue.cs" />
  <Reference Include="UnityEngine.UI">
  <HintPath>D:/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>

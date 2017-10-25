@@ -8,6 +8,11 @@ public class SynchronisedBehaviour : MonoBehaviour {
         GamePulse.sendBeat += OnBeat;
     }
 
+    public void OnDestroy ()
+    {
+        GamePulse.sendBeat -= OnBeat;
+    }
+
     // Update is called on every beat
     public virtual void OnBeat (int beat) {
 		

@@ -118,5 +118,15 @@ public class PlayerController : SynchronisedBehaviour, ICharacterController {
     {
         manager.GameIsOver();
     }
+
+    public void HitByEnemy()
+    {
+        manager.GameIsOver();
+    }
+
+    public void KilledEnemy()
+    {
+        model.Bounce();
+    }
     
 }
